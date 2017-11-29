@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GreenMarket</title>
+    <!-- Bootstrap core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="greenmarket.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script> -->
+     <script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
+     <!-- <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script> -->
+     <script type="text/javascript" src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+     <!-- <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" /> -->
+     <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+     <script src="bower_components/angular/angular.min.js"></script>
+
+  </head>
+
+  <body class="b1">
+      <div class="header1">
+        <div class="media">
+          <div class="media-middle">
+            <img class="media-object" id="img1" src="logo.png" alt="Green Market">
+
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="col-md-6">
+        <div class="panel panel-success p1">
+          <div class="panel-heading">Post to Notifications</div>
+            <div class="panel-body p3">
+              <form role="form">
+                <br style="clear:both">
+          			<div class="form-group">
+
+                  <h4>Title:</h4>
+
+
+      						<input type="text" class="form-control" id="h1" name="header" placeholder="Title" required>
+
+      					</div>
+      					<div class="form-group">
+                  <hr>
+                  <h4>Subject:</h4>
+      						<input type="text" class="form-control" id="h2" name="subheader" placeholder="Subject" required>
+                </div>
+      					<div class="form-group">
+                  <hr>
+                  <h4>Date/Time:</h4>
+                  <div class='input-group date' id='datetimepicker1'>
+                      <input type='text' class="form-control" id="dateTime"/>
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+      					</div>
+                <div class="form-group">
+                  <hr>
+                  <h4>Message:</h4>
+                <textarea class="form-control" type="textarea" id="message" placeholder="Message" maxlength="140" rows="7"></textarea>
+                </div>
+                  <button type="button" id="submit" name="submit" class="btn btn-primary btn-block" onclick="postData()">Post</button>
+              </form>
+
+            </div>
+
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-info p1">
+            <div class="panel-heading">Notifications</div>
+              <div class="panel-body p2">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Options</th>
+                    </tr>
+                  </thead>
+                  <tbody id="nTable">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-default pull-right btn1 btn-block" onclick="signOut()">Sign Out</button>
+
+      </div>
+
+
+  </body>
+
+  <script type="text/javascript" src="greenmarket.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyC1q1xoaJ61FkyWm2QHgbtFVP-0-ntKyX4",
+      authDomain: "green-market-43cfe.firebaseapp.com",
+      databaseURL: "https://green-market-43cfe.firebaseio.com",
+      projectId: "green-market-43cfe",
+      storageBucket: "green-market-43cfe.appspot.com",
+      messagingSenderId: "597509118435"
+    };
+    firebase.initializeApp(config);
+
+    // var provider = new firebase.auth.GoogleAuthProvider();
+    // function login(){
+    //   function newLoginHappened(user){
+    //     if(user){
+    //       //user is signed in
+    //       app(user);
+    //     }else{
+    //       var provider = new firebase.auth.GoogleAuthProvider();
+    //       firebase.auth().signInWithRedirect(provider);
+    //     }
+    //   }
+    //   firebase.auth().onAuthStateChanged(newLoginHappened);
+    // }
+
+    function app(user){
+      console.log("hello");
+    }
+    window.onload = login;
+
+    function signOut(){
+      firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+        window.location = 'index.html';
+        console.log("sign out");
+      }).catch(function(error) {
+        // An error happened.
+      });
+    }
+
+    var database = firebase.database();
+
+    var date;
+    var name;
+    var quote;
+    var description;
+    var time;
+    var dateTime;
+
+    function postData() {
+        this.name=document.getElementById("h1").value;
+        this.quote=document.getElementById("h2").value;
+        this.description=document.getElementById("message").value;
+        this.dateTime=document.getElementById("dateTime").value;
+        var ind = this.dateTime.indexOf(" ");
+        this.date = this.dateTime.substr(0, ind);
+        this.time = this.dateTime.substr(ind + 1);
+
+        firebase.database().ref('/').push({
+          Date: this.date,
+          Description: this.description,
+          Name: this.name,
+          Quote: this.quote,
+          Time: this.time
+        });
+
+        document.getElementById("h1").value = "";
+        document.getElementById("h2").value = "";
+        document.getElementById("message").value = "";
+        document.getElementById("dateTime").value = "";
+        alert("Message Posted");
+    }
+
+    var notes = [];
+    function getData(){
+        firebase.database().ref('/').on('child_added',(snapshot) => {
+          this.notes.push(snapshot.val())
+          postToNotifications()
+        })
+    }
+    var id;
+    var key;
+    function postToNotifications(){
+      var myTable = "";
+
+      // console.log(this.notes[0].Name);
+      for (var i = 0; i < this.notes.length; i++) {
+        // console.log(i);
+        // console.log(this.notes[i].Name);
+        this.id = this.notes[i].Name;
+        // this.key = firebase.database().ref().child('posts').push().key;
+        myTable += "<tr><td>"+this.notes[i].Name+"</td><td><div class='btn-group'><button type='button' class='btn btn-primary disabled'>Edit</button><button type='button' class='btn btn-danger' onclick='deleteData()'>Delete</button></div></td></tr>";
+      }
+      document.getElementById("nTable").innerHTML = myTable;
+    }
+    getData();
+
+    function deleteData(){
+      console.log("it works");
+      console.log(id);
+      // firebase.database().ref('/'+id).remove()
+    }
+
+  </script>
+
+
+
+
+</html>
